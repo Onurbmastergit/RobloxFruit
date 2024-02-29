@@ -70,6 +70,7 @@ public class PlayerMoviment : MonoBehaviour
             Quaternion rotationCam = Quaternion.Euler(0, angle, 0);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotationCam, 0.15f);
         }
+      
 
         Vector3 direction_vertical = Vector3.up * direcao_y;
         Vector3 direction_horizontal = front + right;

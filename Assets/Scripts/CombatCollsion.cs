@@ -18,6 +18,10 @@ public class CombatCollsion : MonoBehaviour
             Debug.Log("Tomou dano");
             collider.GetComponent<EnemyController>().Damage(1);
         }
+        if (collider.GetComponent<PlayerManager>() !=null) 
+        {
+            collider.GetComponent<PlayerManager>().ReceberDano(1);
+        }
     }
    
 

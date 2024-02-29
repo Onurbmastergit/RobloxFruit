@@ -11,7 +11,7 @@ public class CameraController : MonoBehaviour
     float mouseX;
     float mouseY;
     public float sensbilty = 2.22f;
-    bool shiftLock = false;
+    public static bool shiftLock = false;
 
 
     void Start()

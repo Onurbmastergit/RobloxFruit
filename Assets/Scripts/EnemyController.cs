@@ -6,6 +6,7 @@ public class EnemyController : MonoBehaviour
     private float vida = 3;
 
     public float velocidade = 0;
+    public bool cantAttack = false;
     bool chegouAoDestino = true;
 
     bool rondarArea = true;
@@ -15,23 +16,46 @@ public class EnemyController : MonoBehaviour
 
     Rigidbody rb;
 
+    Animator animator;
+
     private void Start()
     {
         destino = Vector3.zero;
         rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
     }
 
     private void FixedUpdate()
     {
-        if (seguirJogador == true) 
+        if (cantAttack == true)
         {
+            animator.SetBool("isAttack", true);
+            return;
+        }
+        
+        if (seguirJogador == true)
+        {
+            Debug.Log("Te achei");
+            animator.SetBool("isWalk", true);
             Vector3 positionPlayer = GameObject.FindWithTag("Player").transform.position;
             transform.position = Vector3.MoveTowards(transform.position, positionPlayer, velocidade * Time.deltaTime);
+
+            //OLHAR O PLAYER
+            float rotacaoX = transform.rotation.x;
+            transform.LookAt(positionPlayer);
+            transform.rotation = Quaternion.Euler(
+            rotacaoX,
+                transform.rotation.eulerAngles.y,
+                transform.rotation.eulerAngles.z
+                );
+
+            Invoke("DesabilitaChegouAoDestino", 2f);
         }
-        if (rondarArea == true) 
+        if (rondarArea == true)
         {
             if (chegouAoDestino)
             {
+                animator.SetBool("isWalk", false);
                 float posicaoX = Random.Range(transform.position.x - 50, transform.position.x + 50);
                 float posicaoZ = Random.Range(transform.position.z - 50, transform.position.z + 50);
                 destino = new Vector3(posicaoX, transform.position.y, posicaoZ);
@@ -70,18 +94,27 @@ public class EnemyController : MonoBehaviour
         {
             chegouAoDestino = true;
         }
+        if (collider.gameObject.tag == "Player")
+        {
+            animator.SetBool("isAttack", true);
+        }
+        else
+        {
+            animator.SetBool("isAttack", false);
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player") 
+        if (other.gameObject.tag == "Player")
         {
             rondarArea = false;
             seguirJogador = true;
         }
+
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "Player") 
+        if (other.gameObject.tag == "Player")
         {
             rondarArea = true;
             seguirJogador = false;
@@ -91,9 +124,12 @@ public class EnemyController : MonoBehaviour
     void DesabilitaChegouAoDestino()
     {
         chegouAoDestino = false;
+        animator.SetBool("isWalk", true);
+        transform.LookAt(destino);
     }
-    void GeradorDeDestino() 
+    void CantAttack()
     {
-
+        animator.SetBool("isAttack", false);
+        cantAttack = false;
     }
 }
