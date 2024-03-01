@@ -1,86 +1,81 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMoviment : MonoBehaviour
 {
-    //Cria uma variavel de velocidade tipo float
+    // Cria uma vari√°vel de velocidade tipo float
     public static float speed = 10f;
 
-    //Cria uma variavel de gravidade tipo float 
+    // Cria uma vari√°vel de gravidade tipo float 
     public static float gravity = 10f;
 
-
-    //Cria uma variavel do tipo CharacterController 
+    // Cria uma vari√°vel do tipo CharacterController 
     CharacterController cc;
 
-    //metodo que se chama ao inicio do game 
+    // M√©todo que √© chamado ao iniciar o jogo 
     private void Start()
     {
-        //Pega o componente characterController do proprio player caso esse script se encontrar nele
+        // Pega o componente CharacterController do pr√≥prio player caso esse script se encontrar nele
         cc = GetComponent<CharacterController>();
     }
+
     void Update()
     {
-        //Cria uma variavel tipo float que recebe falor do Input.GetAxis que È uma funÁ„o da unity que mapeia as teclas e retorna um valor delas caso clicada 
-         float direcao_x = InputController.InputHorizontal * speed * Time.deltaTime;
-         float direcao_z = InputController.InputVertical * speed * Time.deltaTime;
+        // Cria uma vari√°vel tipo float que recebe valor do Input.GetAxis que √© uma fun√ß√£o da Unity que mapeia as teclas e retorna um valor delas caso clicadas 
+        float direcao_x = InputController.InputHorizontal * speed * Time.deltaTime;
+        float direcao_z = InputController.InputVertical * speed * Time.deltaTime;
 
-        //cria uma variavel do tipo float que define uma gravidade simulada para dar uma fisica ao jogo usando a variavel que criamos a cima e TimeDeltaTime para definir que esse valor seja fixo indpendete da pontecia da maquina
-         float direcao_y = -gravity * Time.deltaTime;
+        // Cria uma vari√°vel do tipo float que define uma gravidade simulada para dar uma f√≠sica ao jogo usando a vari√°vel que criamos acima e Time.deltaTime para definir que esse valor seja fixo independente da pot√™ncia da m√°quina
+        float direcao_y = -gravity * Time.deltaTime;
 
-        //Verifica se o estado esta em pulando 
+        // Verifica se o estado est√° em pulando 
         if (PlayerJump.statesJump == StatesJump.Jumping)
         {
-            //agrega um valor de forma interpolada de acordo com o valor da gravidade comeÁando maior e ficando menor para simular a desaceleraÁ„o que ocorre no mundo real
+            // Agrega um valor de forma interpolada de acordo com o valor da gravidade come√ßando maior e ficando menor para simular a desacelera√ß√£o que ocorre no mundo real
             direcao_y = Mathf.SmoothStep(gravity, gravity * 0.40f, PlayerJump.timeJumping / PlayerJump.timeOfJump) * Time.deltaTime;
-    
         }
-        //verifca se o estado È caindo
+        // Verifica se o estado √© caindo
         if (PlayerJump.statesJump == StatesJump.Falling)
         {
-            //agrega um valor de uma maneira interpolada para simular a queda comeÁando menor e terminando maior para simular a inercia e a desaceleraÁ„o 
+            // Agrega um valor de uma maneira interpolada para simular a queda come√ßando menor e terminando maior para simular a in√©rcia e a desacelera√ß√£o 
             direcao_y = Mathf.SmoothStep(-gravity * 0.60f, -gravity * 1.5f, PlayerJump.timeJumping / PlayerJump.timeOfJump) * Time.deltaTime;
         }
 
-        //RotaÁ„o do Personagem
+        // Rota√ß√£o do Personagem
 
-        //Cria um vector3
+        // Cria um Vector3
         Vector3 front = Camera.main.transform.forward;
         Vector3 right = Camera.main.transform.right;
 
-        //zera os y do vector 3 no caso o y
+        // Zera os y do Vector3, no caso o y
         front.y = 0;
         right.y = 0;
 
-        //normaliza e matem o movimento costante sem que haja uma multiplicaÁ„o da velocidade
+        // Normaliza e mant√©m o movimento constante sem que haja uma multiplica√ß√£o da velocidade
         front.Normalize();
         right.Normalize();
 
-        //adiciona os valores correspondente dos inputs que seguem as direÁıes
+        // Adiciona os valores correspondentes dos inputs que seguem as dire√ß√µes
         front = front * direcao_z;
         right = right * direcao_x;
 
-        //verifica se o player  enviou input 
+        // Verifica se o player enviou input 
         if (direcao_x != 0 || direcao_z != 0) 
         {
-            //Rotaciona o personagem de forma interpolada , para dar a sensaÁ„o de suavidade no movimento
+            // Rotaciona o personagem de forma interpolada, para dar a sensa√ß√£o de suavidade no movimento
             float angle = Mathf.Atan2(front.x + direcao_x, front.z + direcao_z) * Mathf.Rad2Deg;
             Quaternion rotationCam = Quaternion.Euler(0, angle, 0);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotationCam, 0.15f);
         }
-      
 
         Vector3 direction_vertical = Vector3.up * direcao_y;
         Vector3 direction_horizontal = front + right;
 
-        //Cria um vetor que guarda 3 valores , no caso estamos usando ele para atualizar a posiÁ„o do player sem precisar alterar 3 variaves 
+        // Cria um vetor que guarda 3 valores, no caso estamos usando ele para atualizar a posi√ß√£o do player sem precisar alterar 3 vari√°veis 
         Vector3 moviment = direction_vertical + direction_horizontal;
 
-      
-
-        //Chama a funÁ„o move responsavel pela movimentaÁ„o , agregando o moviment para atualizar a movimentaÁ„o
+        // Chama a fun√ß√£o Move respons√°vel pela movimenta√ß√£o, agregando o movimento para atualizar a movimenta√ß√£o
         cc.Move(moviment);
     }
 }

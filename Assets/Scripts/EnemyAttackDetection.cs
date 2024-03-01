@@ -6,8 +6,11 @@ public class EnemyAttackDetection : MonoBehaviour
 {
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        // Verifica se o objeto colidido é o jogador
+        if (other.gameObject.CompareTag("Player"))
         {
+            // Define a variável 'cantAttack' do controlador do inimigo como verdadeira
+            // Isso indica que o inimigo não pode atacar enquanto estiver detectando o jogador
             transform.parent.GetComponent<EnemyController>().cantAttack = true;
         }
     }

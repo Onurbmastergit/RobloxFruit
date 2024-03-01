@@ -1,61 +1,70 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
-    // variavel que define em que estado do ataque o jogador est�
+    // Variável que define em que estado do combo de ataque o jogador está
     int combo = 0;
 
-    //varivel que define a quantidade total de ataque 
+    // Variável que define a quantidade total de ataques no combo
     int comboTotal = 3;
 
-    // varivel que controla se o personagem pode atacar
+    // Variável que controla se o personagem pode atacar
     bool cantAttack = true;
 
     Animator animator;
 
     void Start()
     {
-        animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>(); // Obtém o componente Animator do jogador
     }
 
     
     void Update()
     {
-        animator.SetInteger("comboPunch", combo);
+        animator.SetInteger("comboPunch", combo); // Define o parâmetro "comboPunch" do Animator com o valor do combo atual
 
-        if (InputController.InputActionPrincipal && cantAttack ==  true) 
-            PunchsCombo();
+        // Verifica se o botão de ataque principal foi pressionado e se o jogador pode atacar
+        if (InputController.InputActionPrincipal && cantAttack == true) 
+            PunchsCombo(); // Executa o combo de ataques
+        
+        // Se o combo estiver em seu estado inicial (0), o jogador pode atacar novamente
         if (combo == 0) 
             cantAttack = true;
     }
+
+    // Função para executar o combo de ataques
     void PunchsCombo() 
     {
-        combo++;
+        combo++; // Incrementa o combo atual
 
-        animator.SetInteger("comboPunch", combo);
+        animator.SetInteger("comboPunch", combo); // Atualiza o parâmetro "comboPunch" do Animator
 
-        cantAttack = false;
+        cantAttack = false; // Impede o jogador de atacar novamente até o final do combo
 
+        // Se o combo atingiu o limite total, reinicia-o
         if (combo >= comboTotal) 
-        combo = 0;
-        
+            combo = 0;
     }
+
+    // Função chamada no final do combo para permitir que o jogador ataque novamente
     void EndCombo() 
     {
-        cantAttack = true;
+        cantAttack = true; // Permite que o jogador ataque novamente
 
-        animator.SetInteger("comboPunch", 0);
-
+        animator.SetInteger("comboPunch", 0); // Reseta o parâmetro "comboPunch" do Animator
     }
+
+    // Função para habilitar o colisor do ataque
     void EnableCollider()
     {
-        CombatCollsion.colliderPunch.enabled = true;
+        CombatCollsion.colliderPunch.enabled = true; // Habilita o colisor do ataque
     }
+
+    // Função para desabilitar o colisor do ataque
     void DisableCollider()
     {
-        CombatCollsion.colliderPunch.enabled = false;
+        CombatCollsion.colliderPunch.enabled = false; // Desabilita o colisor do ataque
     }
 }
